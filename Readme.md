@@ -8,7 +8,7 @@ Backend API for DriveOra, a car rental platform that allows users to browse vehi
 - Express.js
 - MongoDB
 - Mongoose
-- JWT Authentication
+- JWT
 - bcrypt
 - CORS
 - dotenv
@@ -16,7 +16,7 @@ Backend API for DriveOra, a car rental platform that allows users to browse vehi
 ## Features
 
 - User authentication and authorization
-- Car/vehicle management
+- Vehicle management
 - Car rental bookings
 - Booking management
 - Secure password hashing
@@ -27,9 +27,9 @@ Backend API for DriveOra, a car rental platform that allows users to browse vehi
 
 ### Installation
 
-```
-git clone https://github.com/calebtolorunleke/DriveOra_api.git
-cd DriveOra_api
+```bash
+git clone https://github.com/calebtolorunleke/Driveora_api.git
+cd Driveora_api
 npm install
 
 Environment Variables
@@ -40,12 +40,9 @@ PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 Run the Server
-
-Development:
-
 npm run dev
 
-Production:
+For production:
 
 npm start
 Project Status
