@@ -27,7 +27,7 @@ Backend API for DriveOra, a car rental platform that allows users to browse vehi
 
 ### Installation
 
-```bash
+```
 git clone https://github.com/calebtolorunleke/DriveOra_api.git
 cd DriveOra_api
 npm install
