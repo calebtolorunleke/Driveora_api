@@ -28,27 +28,30 @@ export const addCar = async (req, res) => {
     const imageFile = req.file;
 
     //upload image to ImageKit
-    const fileBuffer = fs.readFileSync(imageFile.path);
-    const response = await imagekit.upload({
+    const fileBuffer = fs.createReadStream(imageFile.path);
+    const response = await imagekit.files.upload({
       file: fileBuffer,
       fileName: imageFile.originalname,
       folder: "/cars",
     });
 
     // optimization through imagekit URL transformation
-    var optimizedImageURL = imagekit.url({
-      path: response.filepath,
+    const optimizedImageURL = imagekit.helper.buildSrc({
+      urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+      src: response.filePath,
       transformation: [
         {
-          height: "300",
-        }, //width resizing
-        { width: "1280" }, //Auto compression
-        { format: "webp" }, //Convert to modern format
+          height: 300,
+          width: 1280,
+          format: "webp",
+        },
       ],
     });
 
-    const image = optimizedImageURL;
-    await Car.create({ ...Car, Owner: _id });
+    fs.unlinkSync(imageFile.path);
+
+    // Crate Car
+    await Car.create({ ...car, owner: _id, image: optimizedImageURL });
 
     res.json({
       success: "true",
