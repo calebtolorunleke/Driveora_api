@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import fs from "fs";
 
 export const changeRoleToOwner = async (req, res) => {
   try {
@@ -21,8 +22,10 @@ export const changeRoleToOwner = async (req, res) => {
 export const addCar = async (req, res) => {
   try {
     const { _id } = req.user;
-    let car = JSON.parse(req.body.carData)
+    let car = JSON.parse(req.body.carData);
     const imageFile = req.file;
+
+    const fileBuffer = fs.readFileSync(imageFile.path);
   } catch (error) {
     console.log(error.message);
     res.json({
