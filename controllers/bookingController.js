@@ -3,7 +3,7 @@ import Car from "../models/Car";
 
 // function to check availability of car for a given Date
 
-const checkAvailability = async (car, pickupDate, returnDate) => {
+export const checkAvailability = async (car, pickupDate, returnDate) => {
   const bookings = await Booking.find({
     car,
     pickupDate: { $lte: returnDate },
@@ -13,7 +13,7 @@ const checkAvailability = async (car, pickupDate, returnDate) => {
 };
 
 // API to check Availability of Cars for the given Date and location
-const checkAvailbilityOfCar = async (req, res) => {
+export const checkAvailbilityOfCar = async (req, res) => {
   try {
     const { location, pickupDate, returnDate } = req.body;
     // fetch all available cars for the given location
