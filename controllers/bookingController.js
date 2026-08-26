@@ -75,6 +75,20 @@ export const createBooking = async (req, res) => {
     const returned = new Date(returnDate);
     const noOfDays = Math.ceil((returned - picked) / (1000 * 60 * 60 * 24));
     const price = carData.pricePerDay * noOfDays;
+
+    await Booking.create({
+      car,
+      owner: carData.owner,
+      user: _id,
+      pickupDate,
+      returnDate,
+      price,
+    });
+
+    res.json({
+      success: true,
+      message: "Booking created",
+    });
   } catch (error) {
     console.log(error.message);
     res.json({
@@ -82,4 +96,10 @@ export const createBooking = async (req, res) => {
       message: error.message,
     });
   }
+};
+
+// API to list User Bookings
+
+export const createBookings = async (req, res) => {
+  
 };
