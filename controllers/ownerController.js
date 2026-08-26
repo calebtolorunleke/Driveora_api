@@ -73,7 +73,7 @@ const getOwnerCars = async (req, res) => {
     const cars = await Car.find({ owner: _id });
     res.json({
       success: true,
-      message: error.message,
+      cars,
     });
   } catch (error) {
     console.log(error.message);
