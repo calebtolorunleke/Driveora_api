@@ -1,5 +1,5 @@
-import Booking from "../models/Booking";
-import Car from "../models/Car";
+import Booking from "../models/Booking.js";
+import Car from "../models/Car.js";
 
 // function to check availability of car for a given Date
 
@@ -158,14 +158,14 @@ export const chnageBookingStatus = async (req, res) => {
     const booking = await Booking.findById(bookingId);
 
     if (booking.owner.toString() !== _id.toString()) {
-      res.json({
+     return res.json({
         success: false,
         message: "Unauthorised",
       });
     }
 
     booking.status = status;
-    await booking.save;
+    await booking.save();
 
     res.json({
       success: true,
