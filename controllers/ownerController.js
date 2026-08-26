@@ -1,4 +1,5 @@
 import { imagekit } from "../configs/imageKit.js";
+import Booking from "../models/Booking.js";
 import Car from "../models/Car.js";
 import User from "../models/User.js";
 import fs from "fs";
@@ -151,13 +152,19 @@ export const getDashboardData = async (req, res) => {
   try {
     const { _id, role } = req.user;
     if (role !== "owner") {
-      res.json({
+      return res.json({
         success: false,
         message: "Unauthorised",
       });
     }
 
     const cars = await Car.find({ owner: _id });
+
+    const bookings = await Booking.find({ owner: _id })
+      .populate("car")
+      .sort({ createdAt: -1 });
+
+      const pendingBookings = 
   } catch (error) {
     console.log(error.message);
     res.json({
