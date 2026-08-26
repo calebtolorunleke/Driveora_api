@@ -157,12 +157,20 @@ export const chnageBookingStatus = async (req, res) => {
 
     const booking = await Booking.findById(bookingId);
 
-    if (booking.owner !== _id) {
+    if (booking.owner.toString() !== _id.toString()) {
       res.json({
         success: false,
-        message: error.message,
+        message: "Unauthorised",
       });
     }
+
+    booking.status = status;
+    await booking.save;
+
+    res.json({
+      success: true,
+      message: "Status updated",
+    });
   } catch (error) {
     console.log(error.message);
 
