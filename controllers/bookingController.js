@@ -100,7 +100,7 @@ export const createBooking = async (req, res) => {
 
 // API to list User Bookings
 
-export const createBookings = async (req, res) => {
+export const getUserBookings = async (req, res) => {
   try {
     const { _id } = req.user;
     const bookings = await Booking.find({ user: _id })
@@ -120,4 +120,31 @@ export const createBookings = async (req, res) => {
   }
 };
 
+// API to get Owner Bookings
+export const getOwnerBookings = async (req, res) => {
+  try {
+    if (req.user.role !== "owner") {
+      return res.json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
 
+    const bookings = await Booking.find({ owner: req.user._id })
+      .populate("car user")
+      .select("-user.password")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      bookings,
+    });
+  } catch (error) {
+    console.log(error.message);
+
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
