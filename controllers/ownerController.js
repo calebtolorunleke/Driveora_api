@@ -179,6 +179,20 @@ export const getDashboardData = async (req, res) => {
       .slice()
       .filter((booking) => booking.status === "confirmed")
       .reduce((acc, booking) => acc + booking.price, 0);
+
+    const dashboardData = {
+      totalCars: cars.length,
+      totalBookings: bookings.length,
+      pendingBookings: pendingBookings.length,
+      completedBookings: completedBookings.length,
+      recentBookings: bookings.slice(0, 3),
+      monthlyRevenue,
+    };
+
+    res.json({
+      success: true,
+      dashboardData,
+    });
   } catch (error) {
     console.log(error.message);
     res.json({
