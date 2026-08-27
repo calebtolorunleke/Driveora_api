@@ -203,11 +203,42 @@ export const getDashboardData = async (req, res) => {
 };
 
 // api to update user image
-export const updateUserImage = (req, res) => {
+export const updateUserImage = async (req, res) => {
   try {
     const { _id } = req.user;
 
-    
+    const imageFile = req.file;
+
+    //upload image to ImageKit
+    const fileBuffer = fs.createReadStream(imageFile.path);
+    const response = await imagekit.files.upload({
+      file: fileBuffer,
+      fileName: imageFile.originalname,
+      folder: "/users",
+    });
+
+    // optimization through imagekit URL transformation
+    const optimizedImageURL = imagekit.helper.buildSrc({
+      urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+      src: response.filePath,
+      transformation: [
+        {
+          quality: "auto",
+          width: 400,
+          format: "webp",
+        },
+      ],
+    });
+
+    fs.unlinkSync(imageFile.path);
+
+    // Crate Car
+    await User.findByIdAndUpdate(_id, { image: optimizedImageURL });
+
+    res.json({
+      success: "true",
+      message: "Profile image updated",
+    });
   } catch (error) {
     console.log(error.message);
     res.json({
