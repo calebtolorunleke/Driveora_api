@@ -16,6 +16,12 @@ export const checkAvailability = async (car, pickupDate, returnDate) => {
 export const checkAvailbilityOfCar = async (req, res) => {
   try {
     const { location, pickupDate, returnDate } = req.body;
+
+    console.log("SEARCH REQUEST:", {
+      location,
+      pickupDate,
+      returnDate,
+    });
     // fetch all available cars for the given location
     const cars = await Car.find({ location, isAvailable: true });
 
@@ -158,7 +164,7 @@ export const chnageBookingStatus = async (req, res) => {
     const booking = await Booking.findById(bookingId);
 
     if (booking.owner.toString() !== _id.toString()) {
-     return res.json({
+      return res.json({
         success: false,
         message: "Unauthorised",
       });
