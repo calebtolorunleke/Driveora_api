@@ -8,7 +8,6 @@ import bookingRouter from "./routes/bookingRoute.js";
 
 const app = express();
 
-// Middleware
 const allowedOrigins = [
   "https://driveora.vercel.app",
   "http://localhost:5173",
@@ -25,29 +24,27 @@ app.use(
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
+// Respond 200 to all OPTIONS preflight requests immediately
+app.options("*", cors());
+
 app.use(express.json());
 
-// Lazy-connect DB middleware for serverless cold-starts
+// Lazy-connect DB middleware
 app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (error) {
-    console.error("Database connection failure:", error);
-    res.status(500).json({ error: "Database connection failed" });
+    console.error("Database connection error:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Database connection failure" });
   }
-});
-
-// Health check and root route
-app.get("/", (req, res) => {
-  res.send("Server is running");
-});
-
-app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "ok", timestamp: new Date() });
 });
 
 // Routes
@@ -55,13 +52,4 @@ app.use("/api/user", userRouter);
 app.use("/api/owner", ownerRouter);
 app.use("/api/bookings", bookingRouter);
 
-// Export app for Vercel Serverless runtime
 export default app;
-
-// Only listen on local port during development
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
