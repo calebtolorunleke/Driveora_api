@@ -14,7 +14,7 @@ const allowedOrigins = [
   "http://localhost:3000",
 ];
 
-// Configure CORS cleanly
+// Configure CORS
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -32,27 +32,29 @@ app.use(
 
 app.use(express.json());
 
-// Root test route
+// Root endpoint for testing API status
 app.get("/", (req, res) => {
-  res.send("Driveora API is running...");
+  res.status(200).send("Driveora API is running...");
 });
 
-// Helper middleware to handle database connection per request safely
-const ensureDbConnected = async (req, res, next) => {
+// Non-blocking database check wrapper
+app.use(async (req, res, next) => {
   try {
     await connectDB();
     next();
   } catch (error) {
-    console.error("Database connection error:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Database connection failed" });
+    console.error("MongoDB Connection Failed:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+      error: error.message,
+    });
   }
-};
+});
 
-// Apply DB connection before routes
-app.use("/api/user", ensureDbConnected, userRouter);
-app.use("/api/owner", ensureDbConnected, ownerRouter);
-app.use("/api/bookings", ensureDbConnected, bookingRouter);
+// Routes
+app.use("/api/user", userRouter);
+app.use("/api/owner", ownerRouter);
+app.use("/api/bookings", bookingRouter);
 
 export default app;
