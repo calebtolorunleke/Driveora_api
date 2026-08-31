@@ -14,28 +14,31 @@ const allowedOrigins = [
   "http://localhost:3000",
 ];
 
+// Configure CORS cleanly
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS policy violation"));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
-// Respond 200 to all OPTIONS preflight requests immediately
-app.options("*", cors());
-
 app.use(express.json());
 
-// Lazy-connect DB middleware
-app.use(async (req, res, next) => {
+// Root test route
+app.get("/", (req, res) => {
+  res.send("Driveora API is running...");
+});
+
+// Helper middleware to handle database connection per request safely
+const ensureDbConnected = async (req, res, next) => {
   try {
     await connectDB();
     next();
@@ -43,13 +46,13 @@ app.use(async (req, res, next) => {
     console.error("Database connection error:", error);
     res
       .status(500)
-      .json({ success: false, message: "Database connection failure" });
+      .json({ success: false, message: "Database connection failed" });
   }
-});
+};
 
-// Routes
-app.use("/api/user", userRouter);
-app.use("/api/owner", ownerRouter);
-app.use("/api/bookings", bookingRouter);
+// Apply DB connection before routes
+app.use("/api/user", ensureDbConnected, userRouter);
+app.use("/api/owner", ensureDbConnected, ownerRouter);
+app.use("/api/bookings", ensureDbConnected, bookingRouter);
 
 export default app;
